@@ -2,23 +2,39 @@ const mongoose = require("mongoose")
 
 const userSchema = mongoose.Schema({
     firstName: {
-        type: String
+        type: String,
+        required: true 
     },
     lastName: {
         type: String
     },
     emailId: {
-        type: String 
+        type: String,
+        required: true,
+        lowercase: true,
+        unique: true,
+        trim: true 
     },
     password: {
-        type: String 
+        type: String,
+        required: true,
+        minLength: 8
     }, 
     age: {
-        type: Number
+        type: Number,
+        min: 18,
+        max: 60
     },
     gender: {
-        type: String
+        type: String,
+        validate(value) {                                           //validate func runs on post automatically but on patch it get passed as runValidator: true in options
+            if(["male", "female", "others"].includes(value)) {
+                throw new Error("Gender not valid")
+            }
+        }
     }
+},{
+    timeStamps: true    // to add time stamp at any entry and updating 
 })
 
 const userModel = mongoose.model('User', userSchema)
