@@ -11,13 +11,6 @@ app.post("/signup", async (req, res) => {
         age: 25,
         gender: "male"
 
-    },
-    {
-        firstName: "Madhur",
-        lastName: "Mangal",
-        age: 25,
-        gender: "male"
-
     })
     try {
         await user.save()
