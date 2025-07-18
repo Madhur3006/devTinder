@@ -1,22 +1,66 @@
 const express = require("express");
 const {connectDB} = require('./config/database')
 const app = express();
-
 const User = require("./models/user")
 
-app.post("/signup", async (req, res) => {
-    const user = new User({
-        firstName: "Madhur",
-        lastName: "Mangal",
-        age: 25,
-        gender: "male"
+app.use(express.json())  // to convert JSON data to JS object to handle req 
 
-    })
+
+app.post("/signup", async (req, res) => {
+    console.log(req.body)
+    const user = new User(req.body)
     try {
         await user.save()
         res.send("data added successfully")
     } catch (error) {
         res.send(`error saving data ${error}`)
+    }
+})
+
+app.get("/user", async (req, res) => {
+    const userName = req.body.name
+    try {
+        const user = await User.find({firstName: userName}) 
+        if(user.length < 1) {
+            res.status(404).send("user not found")
+        }
+        else {
+            res.send(user) 
+        }
+    } catch (error) {
+        res.status(404).send(`Something went wrong ${error}`)
+    }
+})
+
+app.get("/allUser", async (req, res) => {
+    try {
+        const users = await User.find({})
+        res.send(users)
+    } catch (error) {
+        res.status(400).send(`error getting data ${error}`)
+    }
+})
+
+app.delete('/user', async (req, res) => {
+    const userId = req.body.userId 
+
+    try {
+        const user = await User.findByIdAndDelete(userId)
+        res.send("user deleted successfully")
+    } catch (error) {
+        res.status(400).send("soemthing went wrong")
+    }
+})
+
+app.patch('/user', async (req, res) => {
+    const userId = req.body.userId 
+    const data = req.body 
+
+    try {
+        const user = await User.findByIdAndUpdate(userId, data)
+        res.send(user)
+    } catch (error) {
+        res.status(400).send("something went wrong")
     }
 })
 
