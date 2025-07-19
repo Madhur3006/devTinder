@@ -14,4 +14,12 @@ const signUpValidator = (req) => {
     }
 }
 
-module.exports = { signUpValidator }
+const editUserValidator = (req) => {
+    const editAllowedFields = ['firstName', 'lastName', 'gender', 'age']
+    const isAllowed = Object.keys(req.body).every((key) => editAllowedFields.includes(key))
+    return isAllowed;
+}
+
+module.exports = { signUpValidator,
+    editUserValidator
+ }
