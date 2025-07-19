@@ -20,6 +20,11 @@ const editUserValidator = (req) => {
     return isAllowed;
 }
 
+const editPasswordValidator = (req) => {
+    const {password} = req.body 
+    return validator.isStrongPassword(password)
+}
+
 module.exports = { signUpValidator,
-    editUserValidator
+    editUserValidator, editPasswordValidator
  }

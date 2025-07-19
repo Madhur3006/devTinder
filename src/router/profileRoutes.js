@@ -1,6 +1,7 @@
 const express = require("express")
 const { userAuth } = require("../middlewares/auth")
-const { editUserValidator } = require("../utils/dataValidator")
+const { editUserValidator, editPasswordValidator } = require("../utils/dataValidator")
+const bcrypt = require("bcrypt")
 
 const profileRouter = express.Router()
 
@@ -30,6 +31,26 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
         })
     } catch (error) {
         res.status(400).send("something went wrong")
+    }
+})
+
+profileRouter.patch("/profile/password", userAuth, async(req, res) => {
+    try {
+        //take password from body 
+        //validate password 
+        //convert password 
+        //update password 
+
+        if(!editPasswordValidator(req)) {
+            throw new Error("not a valid password")
+        }
+        const loggedInUser = req.user
+        const updatedPasswordHash = await bcrypt.hash(req.body.password, 10)
+        loggedInUser.password = updatedPasswordHash
+        await loggedInUser.save()
+        res.send("password change successfull")
+    } catch (error) {
+        res.status(400).send(`something went wrong ${error}`)
     }
 })
 
