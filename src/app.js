@@ -3,16 +3,18 @@ const {connectDB} = require('./config/database')
 const app = express();
 const User = require("./models/user")
 const bcrypt = require("bcrypt")
-const { signUpValidator } = require("./utils/dataValidator")
+const { signUpValidator } = require("./utils/dataValidator");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken")
 
 app.use(express.json())  // to convert JSON data to JS object to handle req 
-
+app.use(cookieParser())
 
 app.post("/signup", async (req, res) => {
     try {
         signUpValidator(req)
         const {firstName, lastName, emailId, password} = req.body 
-        const passwordHash = bcrypt.hash(password, 10)
+        const passwordHash = await bcrypt.hash(password, 10)                // to hash a password bcrypt.hash      
         const user = new User({
             firstName, 
             lastName,
@@ -33,13 +35,35 @@ app.post("/login", async (req, res) => {
         if(!user) {
             throw new Error("Invalid Credentials")
         } 
-        const isPasswordValid = await bcrypt.compare(password, user.password)
+        const isPasswordValid = await bcrypt.compare(password, user.password)    // to validate password bcrypt.compare 
         if(isPasswordValid) {
+            const token = await jwt.sign({_id: user._id}, "P9kFIJlv")      // created token using jwt.sign(unique id, secret password)
+            console.log(token)
+            res.cookie("token", token)                                     // stored token under cookie 
             res.send("login successful")
         }
         else {
             throw new Error("Invalid credentials")
         }
+    } catch (error) {
+        res.status(400).send(`something went wrong ${error}`)
+    }
+})
+
+app.get("/profile", async (req, res) => {
+    try {
+        const cookies = req.cookies                                  // accessing cookies 
+        const { token } = cookies                                    // accessing token from cookies 
+        if(!token) {
+            throw new Error("token not found")
+        }
+        const decodeMessage = await jwt.verify(token, "P9kFIJlv")   // verifying token using jwt.verify
+        const { _id } = decodeMessage                                  // accessing id from token
+        const user = await User.findOne(_id)                         // finding user by id 
+        if(!user) {
+            throw new Error('user not found')
+        }
+        res.send(user)
     } catch (error) {
         res.status(400).send("something went wrong")
     }
@@ -87,14 +111,14 @@ app.patch('/user', async (req, res) => {
     try {
         const isAllowed = ['password', 'age'] 
         const allowUpdated = Object.keys(data).every((key) => isAllowed.includes(key))
-        if(!allowUpdated) { throw new Error("updates not allowed")}
+        if(allowUpdated) { throw new Error("updates not allowed")}
         const user = await User.findByIdAndUpdate(userId, data, {
             runValidators: true,
             returnDocument: "after" 
         })
         res.send(user)
     } catch (error) {
-        res.status(400).send("something went wrong")
+        res.status(400).send(`something went wrong ${error}`)
     }
 })
 

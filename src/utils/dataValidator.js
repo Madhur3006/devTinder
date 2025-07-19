@@ -6,11 +6,11 @@ const signUpValidator = (req) => {
     if(!firstName || !lastName) {
         throw new Error("name not present")
     }
-    if(!validator.isEmail(email)) {
-        throw new Error("name not present")
+    if(!validator.isEmail(emailId)) {
+        throw new Error("email not valid")
     }
     if(!validator.isStrongPassword(password)) {
-        throw new Error("name not present")
+        throw new Error("password not valid")
     }
 }
 
