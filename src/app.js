@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt")
 const { signUpValidator } = require("./utils/dataValidator");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken")
+const { userAuth } = require("./middlewares/auth")
 
 app.use(express.json())  // to convert JSON data to JS object to handle req 
 app.use(cookieParser())
@@ -37,9 +38,11 @@ app.post("/login", async (req, res) => {
         } 
         const isPasswordValid = await bcrypt.compare(password, user.password)    // to validate password bcrypt.compare 
         if(isPasswordValid) {
-            const token = await jwt.sign({_id: user._id}, "P9kFIJlv")      // created token using jwt.sign(unique id, secret password)
+            const token = await jwt.sign({_id: user._id}, "P9kFIJlv", { expiresIn: '1d'})      // created token using jwt.sign(unique id, secret password)
             console.log(token)
-            res.cookie("token", token)                                     // stored token under cookie 
+            res.cookie("token", token, {
+                expires: new Date(Date.now() + 8 * 3600000)
+            })                                     // stored token under cookie 
             res.send("login successful")
         }
         else {
@@ -50,19 +53,9 @@ app.post("/login", async (req, res) => {
     }
 })
 
-app.get("/profile", async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
     try {
-        const cookies = req.cookies                                  // accessing cookies 
-        const { token } = cookies                                    // accessing token from cookies 
-        if(!token) {
-            throw new Error("token not found")
-        }
-        const decodeMessage = await jwt.verify(token, "P9kFIJlv")   // verifying token using jwt.verify
-        const { _id } = decodeMessage                                  // accessing id from token
-        const user = await User.findOne(_id)                         // finding user by id 
-        if(!user) {
-            throw new Error('user not found')
-        }
+        const user = req.user         
         res.send(user)
     } catch (error) {
         res.status(400).send("something went wrong")
