@@ -6,61 +6,15 @@ const bcrypt = require("bcrypt")
 const { signUpValidator } = require("./utils/dataValidator");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken")
-const { userAuth } = require("./middlewares/auth")
+const { userAuth } = require("./middlewares/auth");
+const authRouter = require("./router/authRoutes");
+const profileRouter = require("./router/profileRoutes");
 
 app.use(express.json())  // to convert JSON data to JS object to handle req 
 app.use(cookieParser())
 
-app.post("/signup", async (req, res) => {
-    try {
-        signUpValidator(req)
-        const {firstName, lastName, emailId, password} = req.body 
-        const passwordHash = await bcrypt.hash(password, 10)                // to hash a password bcrypt.hash      
-        const user = new User({
-            firstName, 
-            lastName,
-            emailId,
-            password: passwordHash
-        })
-        await user.save()
-        res.send("data added successfully")
-    } catch (error) {
-        res.send(`error saving data ${error}`)
-    }
-})
-
-app.post("/login", async (req, res) => {
-    try {
-        const {emailId, password} = req.body 
-        const user = await User.findOne({emailId: emailId})
-        if(!user) {
-            throw new Error("Invalid Credentials")
-        } 
-        const isPasswordValid = await user.validatePassword(password)    // to validate password bcrypt.compare 
-        if(isPasswordValid) {
-            const token = await user.getJWT()     // created token using jwt.sign(unique id, secret password)
-            console.log(token)
-            res.cookie("token", token, {
-                expires: new Date(Date.now() + 8 * 3600000)
-            })                                     // stored token under cookie 
-            res.send("login successful")
-        }
-        else {
-            throw new Error("Invalid credentials")
-        }
-    } catch (error) {
-        res.status(400).send(`something went wrong ${error}`)
-    }
-})
-
-app.get("/profile", userAuth, async (req, res) => {
-    try {
-        const user = req.user         
-        res.send(user)
-    } catch (error) {
-        res.status(400).send("something went wrong")
-    }
-})
+app.use("/", authRouter)
+app.use("/", profileRouter)
 
 app.get("/user", async (req, res) => {
     const userName = req.body.name
