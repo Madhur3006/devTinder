@@ -9,12 +9,14 @@ const jwt = require("jsonwebtoken")
 const { userAuth } = require("./middlewares/auth");
 const authRouter = require("./router/authRoutes");
 const profileRouter = require("./router/profileRoutes");
+const requestRouter = require("./router/requestRoutes");
 
 app.use(express.json())  // to convert JSON data to JS object to handle req 
 app.use(cookieParser())
 
 app.use("/", authRouter)
 app.use("/", profileRouter)
+app.use("/", requestRouter)
 
 app.get("/user", async (req, res) => {
     const userName = req.body.name
