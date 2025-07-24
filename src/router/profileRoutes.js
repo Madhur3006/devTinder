@@ -6,6 +6,8 @@ const bcrypt = require("bcrypt")
 const profileRouter = express.Router()
 
 profileRouter.get("/profile/view", userAuth, async(req, res) => {
+    // using userAuth for validating user and getting user data
+    // sending response back 
     try {
         const user = req.user 
         if(!user) {
@@ -18,7 +20,12 @@ profileRouter.get("/profile/view", userAuth, async(req, res) => {
 }) 
 
 profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
-    try {
+    // validating data 
+    // using userAuth for validating user and getting user data through req.user 
+    // replacing old data with new data 
+    // saving the data
+    // sending response back 
+    try {                                       
         if(!editUserValidator(req)) {
             throw new Error('edit not allowed')
         }

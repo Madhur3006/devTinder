@@ -6,17 +6,21 @@ const authRouter = express.Router()
 const cookieParser = require("cookie-parser");
 
 authRouter.post("/login", async (req, res) => {
+    // getting emailId, password from req.body
+    // validating mail Id from db
+    // validation password using schema methods
+    // generating token
+    // setting token in cookie 
+    // sending response back 
     try {
         const {emailId, password} = req.body 
         const user = await User.findOne({emailId: emailId})
-        console.log(user)
         if(!user) {
             throw new Error('Invalid credentials')
         }
         const isPasswordValid = await user.validatePassword(password, user.password)
         if(isPasswordValid) {
             const token = await user.getJWT()     // created token using jwt.sign(unique id, secret password)
-            console.log(token)
             res.cookie("token", token, {
                 expires: new Date(Date.now() + 8 * 3600000)
             })                                     // stored token under cookie 
@@ -31,6 +35,12 @@ authRouter.post("/login", async (req, res) => {
 })
 
 authRouter.post("/signup", async (req, res) => {
+    // validating sign up data using validator 
+    // getting siign up fields from req.body
+    // generating password hash
+    // setting user fields in schema 
+    // saving data into db 
+    //sending response back 
     try {
         signUpValidator(req)
         const {firstName, lastName, emailId, password} = req.body 
@@ -46,6 +56,8 @@ authRouter.post("/signup", async (req, res) => {
 })
 
 authRouter.post("/logout", async (req, res) => {
+    // deleting token as setting cookie to null
+    // sending response back 
     try {
        res.cookie("token", null, {
         expires: new Date(Date.now())
