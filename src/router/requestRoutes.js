@@ -18,7 +18,7 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res)
 
         const allowedStatus = ['ignored', 'interested']
         if(!allowedStatus.includes(status)) {
-            throw new Error("Invalid Status")
+            return res.status(400).send('status not valid')
         }
 
         const toUser = await User.findById(toUserId)
@@ -47,4 +47,37 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res)
     }
 })
 
+requestRouter.post("/request/review/:status/:requestId", userAuth, async(req, res) => {
+    // get looggedIn user 
+    // get stattus and requestId from params
+    // validate status and requestId
+    // save new status 
+    // send response back 
+    try {
+        const loggedInUser = req.user 
+        const {status, requestId} = req.params 
+
+        const allowedStatus = ['accepted', 'rejected']
+        if(!allowedStatus.includes(status)) {
+            return res.status(400).send('status not valid')
+        }
+
+        const connectionRequest = await ConnectionRequest.findOne({
+            _id: requestId,
+            toUserId: loggedInUser._id,
+            status: 'interested'
+        })
+        if(!connectionRequest) {
+            return res.status(400).send('invalid request')
+        }
+        connectionRequest.status = status;
+        const data = await connectionRequest.save()
+        res.json({
+            message: `Status changed Successfully`,
+            data,
+        })
+    } catch (error) {
+        res.status(400).send(`bad connection request ${error}`)
+    }
+})
 module.exports = requestRouter
