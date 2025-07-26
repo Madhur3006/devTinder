@@ -1,7 +1,7 @@
 const express = require("express")
 const { userAuth } = require("../middlewares/auth")
 const ConnectionRequest = require("../models/connectionRequest")
-
+const User = require("../models/user")
 const userRouter = express.Router()
 
 // get all pending connection request for its logged in user 
@@ -49,6 +49,45 @@ userRouter.get("/user/connections", userAuth, async(req, res) => {
         })
     } catch (error) {
         res.status(400).send("bad connection request")
+    }
+})
+
+userRouter.get("/feed", userAuth, async(req, res) => {
+    // get logged in user 
+    // user should see all the user cards except
+    /* 
+        1) his own 
+        2) once that are ignored
+        3) once that are connected 
+        4) once that are already interested 
+    */ 
+    try {
+        const loggedInUser = req.user 
+
+        const connectionRequest = await ConnectionRequest.find({                 // for finding all connected users 
+            $or: [{toUserId: loggedInUser._id}, {fromUserId: loggedInUser._id}]
+        })
+
+        const hideUserConections = new Set()                         // for findind all distinct user id's 
+        connectionRequest.forEach((req) => {                         // set here is same a python as it only allow distinct values 
+            hideUserConections.add(req.fromUserId.toString());
+            hideUserConections.add(req.toUserId.toString())
+        })
+
+        const users = await User.find({
+            $and: [
+                { _id: { $nin: Array.from(hideUserConections)}},            // $nin stands for not in 
+                { _id: { $ne: loggedInUser._id}}                            // $ne stands for not equal to
+            ]
+        }).select(["firstName", "lastName"])
+
+        res.json({
+            message: "data fetched successfully",
+            data: users, 
+        })
+
+    } catch (error) {
+        res.status(400).send(`Bad connection request ${error}`)
     }
 })
 
