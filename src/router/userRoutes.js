@@ -25,4 +25,31 @@ userRouter.get("/user/requests/received", userAuth, async(req, res) => {
     }
 })
 
+userRouter.get("/user/connections", userAuth, async(req, res) => {
+    // get loggedIn user
+    // get id of loggedIn user 
+    // check if id is part of to,From id 
+    // check the status 
+    // map only connection data 
+    // send response back 
+    try {
+        const loggedInUser = req.user
+
+        const {_id} = loggedInUser
+
+        const connections = await ConnectionRequest.find({
+            $or: [{ toUserId: _id, status: 'accepted'}, {fromUserId: _id, status: 'accepted'}]
+        }).populate("fromUserId", ["firstName", "lastName"])
+        
+        const data = connections.map((connection) => connection.fromUserId)
+
+        res.json({
+            message: `you have ${connections.length} connections`,
+            data: data,
+        })
+    } catch (error) {
+        res.status(400).send("bad connection request")
+    }
+})
+
 module.exports = userRouter
