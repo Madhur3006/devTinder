@@ -64,6 +64,11 @@ userRouter.get("/feed", userAuth, async(req, res) => {
     try {
         const loggedInUser = req.user 
 
+        const page = parseInt(req.query.page) || 1                        // defining page, limit, skip for pagination 
+        let limit = parseInt(req.query.limit) || 10                       // parseInt is used parse integger from string 
+        limit = limit > 50 ? 50 : limit                                   // to sanitize limit                    
+        const skip = (page - 1)*limit                                     // /feed?page=1&limit=10 these are query 
+
         const connectionRequest = await ConnectionRequest.find({                 // for finding all connected users 
             $or: [{toUserId: loggedInUser._id}, {fromUserId: loggedInUser._id}]
         })
@@ -79,7 +84,7 @@ userRouter.get("/feed", userAuth, async(req, res) => {
                 { _id: { $nin: Array.from(hideUserConections)}},            // $nin stands for not in 
                 { _id: { $ne: loggedInUser._id}}                            // $ne stands for not equal to
             ]
-        }).select(["firstName", "lastName"])
+        }).select(["firstName", "lastName"]).skip(skip).limit(limit)         // skip and limit are used for pagination 
 
         res.json({
             message: "data fetched successfully",
