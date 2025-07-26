@@ -11,9 +11,14 @@ const authRouter = require("./router/authRoutes");
 const profileRouter = require("./router/profileRoutes");
 const requestRouter = require("./router/requestRoutes");
 const userRouter = require("./router/userRoutes");
+const cors = require("cors")
 
 app.use(express.json())  // to convert JSON data to JS object to handle req 
 app.use(cookieParser())
+app.use(cors({                         // to handle cors error 
+    origin: "http://localhost:5173",
+    credentials: true
+}))
 
 app.use("/", authRouter)
 app.use("/", profileRouter)
