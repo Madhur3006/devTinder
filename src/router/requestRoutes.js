@@ -22,7 +22,6 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res)
         }
 
         const toUser = await User.findById(toUserId)
-        console.log(toUser);
         if(!toUser) {
             return res.status(404).send("user not found")
         }

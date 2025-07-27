@@ -37,7 +37,7 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
             data: loogedInUser
         })
     } catch (error) {
-        res.status(400).send("something went wrong")
+        res.status(400).send(`something went wrong ${error}`)
     }
 })
 

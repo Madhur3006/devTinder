@@ -84,7 +84,7 @@ userRouter.get("/feed", userAuth, async(req, res) => {
                 { _id: { $nin: Array.from(hideUserConections)}},            // $nin stands for not in 
                 { _id: { $ne: loggedInUser._id}}                            // $ne stands for not equal to
             ]
-        }).select(["firstName", "lastName"]).skip(skip).limit(limit)         // skip and limit are used for pagination 
+        }).skip(skip).limit(limit)         // skip and limit are used for pagination 
 
         res.json({
             message: "data fetched successfully",
