@@ -105,3 +105,11 @@ Modify the BASE_URL in constants to /api
 ----> pm2 start 
 
 ----------------------------------------------------------------------
+
+CRON Job 
+
+-> npm i node-cron 
+-> create file cronjob.js 
+-> cron.schedule("* * * * *", () => {})
+-> date-fns (for handling date related operations)
+-> queue mechanism for bulk emails
