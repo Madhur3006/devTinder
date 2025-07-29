@@ -87,3 +87,21 @@ Modify the BASE_URL in constants to /api
 -> pm2 stop npm 
 -> git pull 
 -> pm2 start npm -- start
+ ------------------------------------------------------------------
+ 
+ Security:
+
+ -> npm i dotenv 
+ -> require("dotenv").config() (mention in app.js)
+ -> create .env file and create envirionment variables then use it in by process.env.<variable> 
+ -> add .env in gitignore 
+ -> push the code  
+
+ -> now on terminal
+----> pm2 stop 
+----> git pull
+----> npm install (as we have installed dependies)
+----> sudo nano .env (env file for production Copy paste all environment variables from local file) -> save 
+----> pm2 start 
+
+----------------------------------------------------------------------
