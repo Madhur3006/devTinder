@@ -12,6 +12,7 @@ const profileRouter = require("./router/profileRoutes");
 const requestRouter = require("./router/requestRoutes");
 const userRouter = require("./router/userRoutes");
 const cors = require("cors")
+require("dotenv").config()
 
 app.use(express.json())  // to convert JSON data to JS object to handle req 
 app.use(cookieParser())
@@ -82,7 +83,7 @@ app.use("/", userRouter)
 
 connectDB().then(() => {
     console.log("establising database connection")
-    app.listen(3000, () => {
+    app.listen(process.env.PORT, () => {
     console.log("Server is successfully on port 3000")
 });
 }).catch((err) => {
