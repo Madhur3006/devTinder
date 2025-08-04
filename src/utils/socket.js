@@ -1,5 +1,6 @@
+const socket = require("socket.io")
+
 const initializeSocket = (server) => {
-    const socket = require("socket.io")
     
     const io = socket(server, {
         cors: {
@@ -9,6 +10,15 @@ const initializeSocket = (server) => {
     
     io.on("connection", (socket) => {
         //Handle events
+
+        socket.on("joinChat", ({fromUserId, toUserId}) => {
+            const room = "uniqueId"
+            socket.join(room)
+        })
+
+        socket.on("sendMessage", () => {})
+
+        socket.on("disconnect", () => {})
     })
     
 }
