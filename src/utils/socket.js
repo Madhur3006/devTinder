@@ -1,4 +1,4 @@
-export const initializeSocket = (server) => {
+const initializeSocket = (server) => {
     const socket = require("socket.io")
     
     const io = socket(server, {
@@ -12,3 +12,5 @@ export const initializeSocket = (server) => {
     })
     
 }
+
+module.exports = initializeSocket;

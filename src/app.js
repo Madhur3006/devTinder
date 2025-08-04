@@ -8,7 +8,7 @@ const requestRouter = require("./router/requestRoutes");
 const userRouter = require("./router/userRoutes");
 const cors = require("cors")
 const http = require("http");
-const {initializeSocket} = require("./utils/socket")
+const initializeSocket = require("./utils/socket")
 require("dotenv").config()
 
 app.use(express.json())  // to convert JSON data to JS object to handle req 
