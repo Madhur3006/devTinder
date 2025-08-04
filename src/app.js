@@ -1,17 +1,14 @@
 const express = require("express");
 const {connectDB} = require('./config/database')
 const app = express();
-const User = require("./models/user")
-const bcrypt = require("bcrypt")
-const { signUpValidator } = require("./utils/dataValidator");
 const cookieParser = require("cookie-parser");
-const jwt = require("jsonwebtoken")
-const { userAuth } = require("./middlewares/auth");
 const authRouter = require("./router/authRoutes");
 const profileRouter = require("./router/profileRoutes");
 const requestRouter = require("./router/requestRoutes");
 const userRouter = require("./router/userRoutes");
 const cors = require("cors")
+const http = require("http");
+const {initializeSocket} = require("./utils/socket")
 require("dotenv").config()
 
 app.use(express.json())  // to convert JSON data to JS object to handle req 
@@ -79,11 +76,14 @@ app.use("/", userRouter)
 //     }
 // })
 
+const server = http.createServer(app);
+
+initializeSocket(server)
 
 
 connectDB().then(() => {
     console.log("establising database connection")
-    app.listen(process.env.PORT, () => {
+    server.listen(process.env.PORT, () => {
     console.log("Server is successfully on port 3000")
 });
 }).catch((err) => {

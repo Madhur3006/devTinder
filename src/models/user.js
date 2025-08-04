@@ -61,7 +61,7 @@ userSchema.methods.getJWT = async function() {
     return token 
 }
 
-userSchema.methods.validatePassword = async function(userInputPassword) {
+userSchema.methods.validatePassword = async function(userInputPassword) {             //arrow function will not work in schema.methods
     const user = this;
     const passwordHash = user.password 
 
