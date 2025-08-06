@@ -8,7 +8,8 @@ const requestRouter = require("./router/requestRoutes");
 const userRouter = require("./router/userRoutes");
 const cors = require("cors")
 const http = require("http");
-const initializeSocket = require("./utils/socket")
+const initializeSocket = require("./utils/socket");
+const chatRouter = require("./router/chatRoutes");
 require("dotenv").config()
 
 app.use(express.json())  // to convert JSON data to JS object to handle req 
@@ -22,6 +23,7 @@ app.use("/", authRouter)
 app.use("/", profileRouter)
 app.use("/", requestRouter)
 app.use("/", userRouter)
+app.use("/", chatRouter)
 
 // app.get("/user", async (req, res) => {
 //     const userName = req.body.name
